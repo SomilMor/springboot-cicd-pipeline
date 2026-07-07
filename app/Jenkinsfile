@@ -72,22 +72,28 @@ pipeline {
         }
 
         stage('Update Kubernetes Manifest') {
-            steps {
-                withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
-                    sh '''
-                    git config user.email "somilmor386@gmail.com"
-                    git config user.name "Somil Mor"
+    steps {
+        checkout scm
 
-                    sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" kubernetes/deployment.yml
+        withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+            sh '''
+                pwd
+                ls -la
+                git status
 
-                    git add kubernetes/deployment.yml
-                    git commit -m "Update image to ${BUILD_NUMBER}" || true
+                git config user.email "somilmor386@gmail.com"
+                git config user.name "Somil Mor"
 
-                    git push https://${GITHUB_TOKEN}@github.com/SomilMor/springboot-cicd-pipeline.git HEAD:main
-                    '''
-                }
-            }
+                sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" kubernetes/deployment.yml
+
+                git add kubernetes/deployment.yml
+                git commit -m "Update image to ${BUILD_NUMBER}" || true
+
+                git push https://${GITHUB_TOKEN}@github.com/SomilMor/springboot-cicd-pipeline.git HEAD:main
+            '''
         }
+    }
+}
     }
 
     post {
