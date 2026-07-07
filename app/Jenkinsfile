@@ -20,12 +20,24 @@ pipeline {
         }
 
         stage('Build with Maven') {
-            steps {
-                dir('app') {
-                    sh 'mvn clean package'
-                }
-            }
+    steps {
+        dir('app') {
+            sh '''
+                mvn clean package
+
+                echo "=============================="
+                echo "Contents of target directory:"
+                echo "=============================="
+                ls -lah target
+
+                echo "=============================="
+                echo "Looking for JAR files:"
+                echo "=============================="
+                find target -name "*.jar"
+            '''
         }
+    }
+}
 
         stage('Run SonarQube Analysis') {
             steps {
